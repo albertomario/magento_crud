@@ -1,0 +1,161 @@
+<?php if($this->soapFault) { ?>
+<div class="alert alert-danger">
+  <strong>SoapFault - Eroare client SOAP</strong><br/>
+  <?=nl2br($this->soapFault);?>
+</div>
+<?php } ?>
+<div class="row">
+	<div class="col-md-8">
+		
+		<form class="form-horizontal" method="POST">
+		<fieldset>
+
+		<!-- Form Name -->
+		<legend>Modificare client "<?=$this->clientDetails->firstname.' '.$this->clientDetails->lastname;?>"</legend>
+
+		<!-- Text input-->
+		<div class="form-group <?php if($this->hasError['upd_firstname']) echo 'has-error'; ?>">
+		  <label class="col-md-4 control-label" for="fn">Prenume</label>  
+		  <div class="col-md-4">
+		  <input id="fn" name="upd_firstname" type="text" value="<?=$this->temporaryData('upd_firstname', $this->clientDetails->firstname);?>" class="form-control input-md" required="">
+		  <?php if($this->hasError['upd_firstname']) { ?>
+		  <span class="help-block"><?=$this->hasError['upd_firstname'];?></span>
+		  <?php } ?>
+		  </div>
+		</div>
+
+		<!-- Text input-->
+		<div class="form-group <?php if($this->hasError['upd_lastname']) echo 'has-error'; ?>">
+		  <label class="col-md-4 control-label" for="ln">Nume</label>  
+		  <div class="col-md-4">
+		  <input id="ln" name="upd_lastname" type="text" value="<?=$this->temporaryData('upd_lastname', $this->clientDetails->lastname);?>" class="form-control input-md" required="">
+		  <?php if($this->hasError['upd_lastname']) { ?>
+		  <span class="help-block"><?=$this->hasError['upd_lastname'];?></span>
+		  <?php } ?>
+		  </div>
+		</div>
+
+		<!-- Text input-->
+		<div class="form-group <?php if($this->hasError['upd_email']) echo 'has-error'; ?>">
+		  <label class="col-md-4 control-label" for="email">Email</label>  
+		  <div class="col-md-4">
+		  <input id="email" name="upd_email" type="text" value="<?=$this->temporaryData('upd_email', $this->clientDetails->email);?>" class="form-control input-md" required="">
+		  <?php if($this->hasError['upd_email']) { ?>
+		  <span class="help-block"><?=$this->hasError['upd_email'];?></span>
+		  <?php } ?>		    
+		  </div>
+		</div>
+
+		<!-- Text input-->
+		<div class="form-group <?php if($this->hasError['upd_dob']) echo 'has-error'; ?>">
+		  <label class="col-md-4 control-label" for="dob">Data nasterii</label>  
+		  <div class="col-md-4">
+		  <input id="dob" name="upd_dob" type="text" value="<?=$this->clientDetails->dob;?>" class="form-control input-md" required="">
+		  <?php if($this->hasError['upd_dob']) { ?>
+		  <span class="help-block"><?=$this->hasError['upd_dob'];?></span>
+		  <?php } ?>		    
+		  </div>
+		</div>		
+
+
+		<!-- Select Basic -->
+		<div class="form-group <?php if($this->hasError['upd_gender']) echo 'has-error'; ?>">
+		  <label class="col-md-4 control-label" for="selectbasic">Gen</label>
+		  <div class="col-md-4">
+		    <select id="selectbasic" name="upd_gender" class="form-control input-md">
+		      <option value="1" <?php if($this->clientDetails->gender == '1') echo 'selected'; ?>>Masculin</option>
+		      <option value="2" <?php if($this->clientDetails->gender == '2') echo 'selected'; ?>>Feminin</option>
+		      <option value="3" <?php if($this->clientDetails->gender == '3') echo 'selected'; ?>>Nespecificat</option>
+		    </select>
+		  <?php if($this->hasError['upd_gender']) { ?>
+		  <span class="help-block"><?=$this->hasError['upd_gender'];?></span>
+		  <?php } ?>		    
+		  </div>
+		</div>
+
+		<hr>
+
+
+		<!-- Button -->
+		<div class="form-group">
+		  <label class="col-md-4 control-label" for="submit"></label>
+  		  <div class="col-md-2">
+		    <button id="submit" name="submit" class="btn btn-warning">Renunta</button>
+		  </div>
+		  <div class="col-md-2">
+		    <button id="submit" name="submit" class="btn btn-primary">Salveaza</button>
+		  </div>
+		</div>
+
+		</fieldset>
+		</form>
+
+
+	</div>
+	<div class="col-md-4">
+		<legend> Istoric modificari <span class="small-except pull-right">* Doar cele efectuate din platforma</span></legend>
+		<?php if(!$this->resultHistory) { ?>
+			<center>Nici o modificare efectuata</center>
+		<?php } else { ?>
+		<table class="table table-striped">
+		    <thead>
+		      <tr>
+		        <th>#</th>
+		        <th>Data modificare</th>
+		        <th>Payload</th>
+		      </tr>
+		    </thead>
+    		<tbody>
+		<?php foreach($this->resultHistory as $historyElement) { ?>
+			<tr>
+        <td><?=$historyElement['id'];?></td>
+        <td><?=$historyElement['createdAt'];?></td>
+        <td><a href="javascript:;" id="openHistory" data-id="<?=$historyElement['id'];?>" class="btn btn-xs btn-success">Vizualizare</a></td>
+      </tr>
+
+		<?php } ?>
+
+		    </tbody>
+		  </table>
+		<?php } ?>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	$(function() {
+		$('input#dob').datepicker({format: "yyyy-mm-dd", autoclose: true});
+	
+	$('#openHistory').click(function(){
+	  	var historyId = $(this).attr('data-id');
+	  	$('.modal-body').load('/customers/history/historyId/'+historyId,function(result){
+	  		var Json = $.parseJSON(result);
+
+	  		$('.modal-body').html('<pre>'+syntaxHighlight(JSON.stringify(Json, undefined, 4))+'</pre>');
+		    $('#myModal').modal({show:true});
+		});
+	  
+		
+	});
+	});
+
+function syntaxHighlight(json) {
+    json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+        var cls = 'number';
+        if (/^"/.test(match)) {
+            if (/:$/.test(match)) {
+                cls = 'key';
+            } else {
+                cls = 'string';
+            }
+        } else if (/true|false/.test(match)) {
+            cls = 'boolean';
+        } else if (/null/.test(match)) {
+            cls = 'null';
+        }
+        return '<span class="' + cls + '">' + match + '</span>';
+    });
+}	
+</script>

@@ -1,0 +1,30 @@
+<?php if($this->flashMessenger->hasMessages('SUCCESS')) { ?>
+<div class="alert alert-success">
+  <strong>Success</strong><br/>
+  <?=$this->flashMessenger->getMessages('SUCCESS')[0];?>
+</div>
+<?php } ?>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>#</th>
+            <th>Prenume</th>
+            <th>Nume</th>
+            <th>Email</th>
+            <th>Ultima Modificare</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach($this->customersList as $Customer) { ?>
+        <tr>
+            <th scope="row"><?=$Customer->id;?></th>
+            <td><?=$Customer->firstname;?></td>
+            <td><?=$Customer->lastname;?></td>
+            <td><?=$Customer->email;?></td>
+            <td><?=$Customer->updatedAt;?></td>
+            <td><a class="btn btn-warning btn-xs" href="<?=$this->url(array('controller' => 'customers', 'action' => 'edit', customerId => $Customer->id)); ?>" role="button">Modifica</a> <a class="btn btn-danger btn-xs" href="<?=$this->url(array('controller' => 'customers', 'action' => 'delete', customerId => $Customer->id)); ?>" role="button">Sterge</a></td>
+        </tr>
+        <?php } ?>
+    </tbody>
+</table>
